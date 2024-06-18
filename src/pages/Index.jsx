@@ -1,17 +1,37 @@
-// Update this page (the content is just a fallback if you fail and example)
-// Use chakra-ui
-import { Container, Text, VStack } from "@chakra-ui/react";
-
-// Example of using react-icons
-// import { FaRocket } from "react-icons/fa";
-// <IconButton aria-label="Add" icon={<FaRocket />} size="lg" />; // IconButton would also have to be imported from chakra
+import { useState } from "react";
+import { Container, Text, VStack, Input, Button, Box } from "@chakra-ui/react";
+import nlp from "compromise";
 
 const Index = () => {
+  const [query, setQuery] = useState("");
+  const [analysis, setAnalysis] = useState(null);
+
+  const handleAnalyze = () => {
+    const doc = nlp(query);
+    const topics = doc.topics().out('array');
+    setAnalysis({ topics });
+  };
+
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
       <VStack spacing={4}>
-        <Text fontSize="2xl">Your Blank Canvas</Text>
-        <Text>Chat with the agent to start making edits.</Text>
+        <Text fontSize="2xl">User Query Analysis</Text>
+        <Input 
+          placeholder="Enter your query..." 
+          value={query} 
+          onChange={(e) => setQuery(e.target.value)} 
+        />
+        <Button onClick={handleAnalyze}>Analyze Query</Button>
+        {analysis && (
+          <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
+            <Text fontSize="lg">Identified Topics:</Text>
+            <VStack spacing={2} align="start">
+              {analysis.topics.map((topic, index) => (
+                <Text key={index}>{topic}</Text>
+              ))}
+            </VStack>
+          </Box>
+        )}
       </VStack>
     </Container>
   );
